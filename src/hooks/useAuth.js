@@ -84,6 +84,19 @@ export function useAuth() {
     return { data, error }
   }
 
+  const refreshProfile = async () => {
+    if (!user?.id) return
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', user.id)
+      .single()
+
+    if (!error && data) {
+      setProfile(data)
+    }
+  }
+
   const signIn = async (email, password) => {
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
@@ -135,6 +148,7 @@ export function useAuth() {
     user,
     profile,
     loading,
+    refreshProfile,
     signIn,
     signUp,
     signOut,

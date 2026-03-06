@@ -7,7 +7,7 @@ import majorsData from '@/data/rutgers-majors.json'
 
 export default function Onboarding() {
   const navigate = useNavigate()
-  const { user } = useAuth()
+  const { user, refreshProfile } = useAuth()
   const [currentStep, setCurrentStep] = useState(1)
   const [loading, setLoading] = useState(false)
 
@@ -87,6 +87,9 @@ export default function Onboarding() {
         }])
 
       if (planError) throw planError
+
+      // Refresh profile in local state so the app knows onboarding is complete
+      await refreshProfile()
 
       toast.success('Onboarding completed!')
       navigate('/dashboard')
