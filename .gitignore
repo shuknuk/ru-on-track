@@ -141,3 +141,6 @@ Thumbs.db
 
 # Supabase
 .supabase
+
+# MCP Protocols
+.mcp.json

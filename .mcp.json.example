@@ -1,0 +1,19 @@
+{
+  "mcpServers": {
+    "supabase": {
+      "type": "http",
+      "url": "supabase-url-here"
+    },
+    "resend": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "-y",
+        "resend-mcp"
+      ],
+      "env": {
+        "RESEND_API_KEY": "api-key-here"
+      }
+    }
+  }
+}
