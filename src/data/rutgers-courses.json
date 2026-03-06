@@ -1,0 +1,26 @@
+[
+  {
+    "course_code": "01:198:111",
+    "title": "Introduction to Computer Science",
+    "credits": 3,
+    "department": "Computer Science",
+    "description": "Fundamental concepts of computer science and basic programming.",
+    "is_easy_a": false,
+    "difficulty_rating": 3.2,
+    "category": "Major",
+    "fulfills": ["SAS Core QR"],
+    "has_cc_equivalent": true
+  },
+  {
+    "course_code": "01:920:101",
+    "title": "Introduction to Sociology",
+    "credits": 3,
+    "department": "Sociology",
+    "description": "Basic concepts, theories, and methods of sociology.",
+    "is_easy_a": true,
+    "difficulty_rating": 2.1,
+    "category": "SAS Core",
+    "fulfills": ["SAS Core SCL"],
+    "has_cc_equivalent": true
+  }
+]

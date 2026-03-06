@@ -1,0 +1,20 @@
+[
+  {
+    "rutgers_course": "01:198:111",
+    "rutgers_title": "Introduction to Computer Science",
+    "cc_name": "Raritan Valley Community College",
+    "cc_course_code": "CSIT 101",
+    "cc_course_title": "Introduction to Computer Science",
+    "is_verified": true,
+    "notes": "Transfers as equivalent"
+  },
+  {
+    "rutgers_course": "01:920:101",
+    "rutgers_title": "Introduction to Sociology",
+    "cc_name": "Raritan Valley Community College",
+    "cc_course_code": "SOC 101",
+    "cc_course_title": "Introduction to Sociology",
+    "is_verified": true,
+    "notes": "Transfers as equivalent"
+  }
+]

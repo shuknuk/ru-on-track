@@ -1,0 +1,18 @@
+[
+  {
+    "original_course": "01:750:203",
+    "original_title": "General Physics I",
+    "easier_course": "01:750:193",
+    "easier_title": "Physics for the Sciences",
+    "reason": "Less calculus-intensive, more conceptual",
+    "verified": true
+  },
+  {
+    "original_course": "01:640:151",
+    "original_title": "Calculus I",
+    "easier_course": "01:640:135",
+    "easier_title": "Calculus for the Life and Social Sciences",
+    "reason": "Applied focus, less theoretical rigor",
+    "verified": true
+  }
+]
