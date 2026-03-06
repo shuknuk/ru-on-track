@@ -11,7 +11,7 @@ import PrivateRoute from './components/shared/PrivateRoute'
 import { useAuth } from './hooks/useAuth'
 
 function AppRoutes() {
-  const { profile } = useAuth()
+  const { profile, loading } = useAuth()
 
   return (
     <Routes>
@@ -26,27 +26,67 @@ function AppRoutes() {
       } />
       <Route path="/dashboard" element={
         <PrivateRoute>
-          {profile?.major_primary ? <Dashboard /> : <Navigate to="/onboarding" replace />}
+          {loading ? (
+            <div className="min-h-screen flex items-center justify-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-scarlet"></div>
+            </div>
+          ) : profile?.major_primary ? (
+            <Dashboard />
+          ) : (
+            <Navigate to="/onboarding" replace />
+          )}
         </PrivateRoute>
       } />
       <Route path="/planner" element={
         <PrivateRoute>
-          {profile?.major_primary ? <Planner /> : <Navigate to="/onboarding" replace />}
+          {loading ? (
+            <div className="min-h-screen flex items-center justify-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-scarlet"></div>
+            </div>
+          ) : profile?.major_primary ? (
+            <Planner />
+          ) : (
+            <Navigate to="/onboarding" replace />
+          )}
         </PrivateRoute>
       } />
       <Route path="/easyA" element={
         <PrivateRoute>
-          {profile?.major_primary ? <EasyA /> : <Navigate to="/onboarding" replace />}
+          {loading ? (
+            <div className="min-h-screen flex items-center justify-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-scarlet"></div>
+            </div>
+          ) : profile?.major_primary ? (
+            <EasyA />
+          ) : (
+            <Navigate to="/onboarding" replace />
+          )}
         </PrivateRoute>
       } />
       <Route path="/professors" element={
         <PrivateRoute>
-          {profile?.major_primary ? <Professors /> : <Navigate to="/onboarding" replace />}
+          {loading ? (
+            <div className="min-h-screen flex items-center justify-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-scarlet"></div>
+            </div>
+          ) : profile?.major_primary ? (
+            <Professors />
+          ) : (
+            <Navigate to="/onboarding" replace />
+          )}
         </PrivateRoute>
       } />
       <Route path="/settings" element={
         <PrivateRoute>
-          {profile?.major_primary ? <Settings /> : <Navigate to="/onboarding" replace />}
+          {loading ? (
+            <div className="min-h-screen flex items-center justify-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-scarlet"></div>
+            </div>
+          ) : profile?.major_primary ? (
+            <Settings />
+          ) : (
+            <Navigate to="/onboarding" replace />
+          )}
         </PrivateRoute>
       } />
     </Routes>

@@ -1,11 +1,11 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import toast, { Toaster } from 'react-hot-toast'
 import { useAuth } from '@/hooks/useAuth'
 
 export default function Auth() {
   const navigate = useNavigate()
-  const { signIn, signUp } = useAuth()
+  const { user, profile, signIn, signUp, loading: authLoading } = useAuth()
   const [activeTab, setActiveTab] = useState('signin')
   const [loading, setLoading] = useState(false)
   const [formData, setFormData] = useState({
@@ -14,6 +14,26 @@ export default function Auth() {
     confirmPassword: '',
   })
   const [errors, setErrors] = useState({})
+
+  // Redirect if already signed in
+  useEffect(() => {
+    if (!authLoading && user) {
+      if (profile?.major_primary) {
+        navigate('/dashboard', { replace: true })
+      } else {
+        navigate('/onboarding', { replace: true })
+      }
+    }
+  }, [user, profile, authLoading, navigate])
+
+  // Show loading while checking auth
+  if (authLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-scarlet"></div>
+      </div>
+    )
+  }
 
   const validateEmail = (email) => {
     if (!email.includes('@')) {

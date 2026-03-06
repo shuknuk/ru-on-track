@@ -1,78 +1,62 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { supabase } from '@/lib/supabase'
 
 export function useAuth() {
   const [user, setUser] = useState(null)
   const [profile, setProfile] = useState(null)
   const [loading, setLoading] = useState(true)
+  const initialized = useRef(false)
 
   useEffect(() => {
+    if (initialized.current || !supabase) return
+    initialized.current = true
+
     const fetchProfile = async (userId) => {
       if (!userId) {
         setProfile(null)
         return
       }
 
-      // Timeout for profile fetch
-      const timeoutPromise = new Promise((resolve) =>
-        setTimeout(() => resolve({ timedOut: true }), 10000)
-      )
-
-      const fetchPromise = supabase
+      const { data, error } = await supabase
         .from('profiles')
         .select('*')
         .eq('id', userId)
         .single()
 
-      const result = await Promise.race([fetchPromise, timeoutPromise])
-
-      if (result.timedOut) {
-        console.error('Profile fetch timed out')
-        setProfile(null)
-        return
-      }
-
-      const { data, error } = result
-
       if (error) {
         console.error('Error fetching profile:', error)
-      } else {
+      } else if (data) {
         setProfile(data)
       }
     }
 
-    const handleAuthChange = async (session) => {
+    const initAuth = async () => {
       try {
-        const currentUser = session?.user ?? null
-        setUser(currentUser)
+        const { data: { session } } = await supabase.auth.getSession()
 
-        if (currentUser) {
-          await fetchProfile(currentUser.id)
+        if (session?.user) {
+          setUser(session.user)
+          await fetchProfile(session.user.id)
         } else {
+          setUser(null)
           setProfile(null)
         }
       } catch (error) {
-        console.error('Auth change error:', error)
-        setProfile(null)
+        console.error('Get session error:', error)
       } finally {
         setLoading(false)
       }
     }
 
-    // Check active sessions
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      handleAuthChange(session)
-    }).catch((error) => {
-      console.error('Get session error:', error)
-      setLoading(false)
-    })
+    initAuth()
 
-    // Listen for changes on auth state
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
-      try {
-        await handleAuthChange(session)
-      } catch (error) {
-        console.error('Auth state change error:', error)
+      if (session?.user) {
+        setUser(session.user)
+        await fetchProfile(session.user.id)
+      } else {
+        setUser(null)
+        setProfile(null)
         setLoading(false)
       }
     })
@@ -81,12 +65,8 @@ export function useAuth() {
   }, [])
 
   const createProfile = async (userId, email) => {
-    // Timeout for profile creation
-    const timeoutPromise = new Promise((resolve) =>
-      setTimeout(() => resolve({ timedOut: true }), 10000)
-    )
-
-    const createPromise = supabase
+    // Simple upsert without timeout race
+    const { data, error } = await supabase
       .from('profiles')
       .upsert([
         {
@@ -97,15 +77,6 @@ export function useAuth() {
       ])
       .select()
       .single()
-
-    const result = await Promise.race([createPromise, timeoutPromise])
-
-    if (result.timedOut) {
-      console.error('Profile creation timed out')
-      return { data: null, error: new Error('Profile creation timed out') }
-    }
-
-    const { data, error } = result
 
     if (!error && data) {
       setProfile(data)
