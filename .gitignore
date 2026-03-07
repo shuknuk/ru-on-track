@@ -144,3 +144,5 @@ Thumbs.db
 
 # MCP Protocols
 .mcp.json
+.vercel
+.env*.local
