@@ -76,9 +76,9 @@ flowchart TD
 
 | Layer | Technology | Reason |
 |---|---|---|
-| Frontend | React + Vite | Fast dev, large ecosystem |
+| Frontend | Next.js 14 (App Router) | SSR, automatic code splitting, better performance |
 | Styling | Tailwind CSS | Utility-first, no CSS file sprawl |
-| Routing | React Router v6 | Standard SPA routing |
+| Routing | Next.js App Router | File-based routing, server components |
 | Auth | Supabase Auth | `.edu` email restriction, free tier |
 | Database | Supabase (Postgres) | Free tier, pairs with Auth |
 | Backend | Supabase Edge Functions | Serverless, no separate backend for MVP |
@@ -90,62 +90,51 @@ flowchart TD
 ## 📁 Project Structure
 
 ```
-rutgers-planner/
+rutgersplan/
 ├── CLAUDE.md
 ├── .env.local                 ← Never commit
 ├── .env.example               ← Commit (no real values)
 ├── package.json
-├── vite.config.js
+├── next.config.js
 ├── tailwind.config.js
+├── postcss.config.js
+├── jsconfig.json              ← Path aliases (@/*)
 │
-├── src/
-│   ├── main.jsx
-│   ├── App.jsx
+├── app/
+│   ├── layout.jsx             # Root layout with AuthProvider
+│   ├── page.jsx               # Landing page (/)
+│   ├── globals.css            # Global styles + Tailwind
+│   ├── supabase.js            # Supabase client
+│   ├── AuthProvider.jsx       # Auth context provider
 │   │
-│   ├── pages/
-│   │   ├── Landing.jsx
-│   │   ├── Auth.jsx
-│   │   ├── Onboarding.jsx
-│   │   ├── Dashboard.jsx
-│   │   ├── Planner.jsx
-│   │   ├── EasyA.jsx
-│   │   ├── Professors.jsx
-│   │   └── Settings.jsx
+│   ├── auth/
+│   │   └── page.jsx           # /auth
+│   ├── onboarding/
+│   │   └── page.jsx           # /onboarding
+│   ├── dashboard/
+│   │   └── page.jsx           # /dashboard
+│   ├── planner/
+│   │   └── page.jsx           # /planner
+│   ├── easyA/
+│   │   └── page.jsx           # /easyA
+│   ├── professors/
+│   │   └── page.jsx           # /professors
+│   └── settings/
+│       └── page.jsx           # /settings
 │   │
 │   ├── components/
-│   │   ├── layout/
-│   │   │   ├── Navbar.jsx
-│   │   │   └── Sidebar.jsx
-│   │   ├── planner/
-│   │   │   ├── SemesterCard.jsx
-│   │   │   ├── CourseChip.jsx
-│   │   │   └── RequirementBar.jsx
-│   │   ├── professor/
-│   │   │   ├── ProfCard.jsx
-│   │   │   └── ProfNotFound.jsx
-│   │   └── shared/
-│   │       ├── PremiumGate.jsx
-│   │       └── Modal.jsx
+│   │   └── layout/
+│   │       ├── Navbar.jsx
+│   │       └── Sidebar.jsx
 │   │
-│   ├── hooks/
-│   │   ├── useAuth.js
-│   │   ├── usePlanner.js
-│   │   └── useCourses.js
+│   ├── utils/
+│   │   └── creditCounter.js
 │   │
-│   ├── lib/
-│   │   ├── supabase.js
-│   │   ├── stripe.js
-│   │   └── rmp.js
-│   │
-│   ├── data/
-│   │   ├── rutgers-courses.json
-│   │   ├── easy-a-swaps.json
-│   │   └── cc-transfers.json
-│   │
-│   └── utils/
-│       ├── creditCounter.js
-│       ├── requirementChecker.js
-│       └── gpaEstimator.js
+│   └── data/
+│       ├── rutgers-courses.json
+│       ├── rutgers-majors.json
+│       ├── easy-a-swaps.json
+│       └── cc-transfers.json
 │
 └── supabase/
     ├── migrations/
@@ -293,9 +282,9 @@ colors: {
 
 ### Environment Variables (.env.local)
 ```
-VITE_SUPABASE_URL=
-VITE_SUPABASE_ANON_KEY=
-VITE_STRIPE_PUBLISHABLE_KEY=
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=
 ```
 
 ---
