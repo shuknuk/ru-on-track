@@ -8,6 +8,7 @@ import Markdown from '@/app/components/common/Markdown'
 import { Button } from '@/app/components/ui/Button'
 import { Input } from '@/app/components/ui/Input'
 import { ThemeToggle } from '@/app/components/theme/ThemeToggle'
+import { FadeIn } from '@/app/components/motion/MotionPrimitives'
 
 export default function Auth() {
   const router = useRouter()
@@ -136,7 +137,7 @@ export default function Auth() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-4 text-foreground">
       <Toaster position="top-center" />
-      <div className="w-full max-w-md border border-border bg-card motion-fade-up">
+      <FadeIn className="w-full max-w-md border border-border bg-card" amount={0.2}>
         <div className="flex justify-end border-b border-border px-4 py-3">
           <ThemeToggle />
         </div>
@@ -161,20 +162,20 @@ export default function Auth() {
           </h1>
 
           {authInitWarning && (
-            <div className="mb-6 border-l-2 border-yellow-500 bg-yellow-500/10 px-4 py-3 text-sm text-yellow-300 motion-fade-up">
+            <FadeIn className="mb-6 border-l-2 border-yellow-500 bg-yellow-500/10 px-4 py-3 text-sm text-yellow-300" once={false} amount={0.01}>
               {authInitWarning}
-            </div>
+            </FadeIn>
           )}
 
           {submitError && (
-            <div className="mb-6 border-l-2 border-red-500 bg-red-500/10 px-4 py-3 text-sm text-red-400 motion-fade-up">
+            <FadeIn className="mb-6 border-l-2 border-red-500 bg-red-500/10 px-4 py-3 text-sm text-red-400" once={false} amount={0.01}>
               {submitError}
-            </div>
+            </FadeIn>
           )}
           {submitMessage && (
-            <div className="mb-6 border-l-2 border-accent bg-accent/10 px-4 py-3 text-sm text-accent motion-fade-up">
+            <FadeIn className="mb-6 border-l-2 border-accent bg-accent/10 px-4 py-3 text-sm text-accent" once={false} amount={0.01}>
               {submitMessage}
-            </div>
+            </FadeIn>
           )}
 
           <form onSubmit={handleSubmit}>
@@ -264,7 +265,7 @@ export default function Auth() {
             </a>
           </div>
         </div>
-      </div>
+      </FadeIn>
     </div>
   )
 }

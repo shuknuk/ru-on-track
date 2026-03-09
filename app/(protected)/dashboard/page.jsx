@@ -6,6 +6,7 @@ import Navbar from '@/app/components/layout/Navbar'
 import Sidebar from '@/app/components/layout/Sidebar'
 import { calculateRemainingCredits } from '@/app/utils/creditCounter'
 import Markdown from '@/app/components/common/Markdown'
+import { FadeIn, StaggerGroup, FadeItem } from '@/app/components/motion/MotionPrimitives'
 
 export default function Dashboard() {
   const { profile } = useAuth()
@@ -22,7 +23,7 @@ export default function Dashboard() {
       <div className="flex">
         <Sidebar />
         <div className="flex-1 p-8 md:p-12">
-          <div className="mb-8 motion-fade-up">
+          <FadeIn className="mb-8" amount={0.1}>
             <h1 className="mb-3 font-sans text-5xl font-extrabold tracking-[-0.05em] text-foreground">
               Welcome back{profile?.email ? `, ${profile.email.split('@')[0]}` : ''}!
             </h1>
@@ -34,33 +35,33 @@ export default function Dashboard() {
                 profile?.grad_year ? `• Graduating **${profile.grad_year}**` : '',
               ].filter(Boolean).join(' ')}
             />
-          </div>
+          </FadeIn>
 
-          <div className="mb-10 grid grid-cols-1 gap-0 border border-border md:grid-cols-2 lg:grid-cols-4 motion-stagger">
-            <div className="border border-border bg-card p-6">
+          <StaggerGroup className="mb-10 grid grid-cols-1 gap-0 border border-border md:grid-cols-2 lg:grid-cols-4" amount={0.1}>
+            <FadeItem className="border border-border bg-card p-6">
               <h2 className="font-mono text-xs uppercase tracking-[0.1em] text-muted-foreground mb-2">Credits Planned</h2>
               <p className="text-4xl font-extrabold tracking-[-0.04em] text-accent">{totalCreditsPlanned}</p>
               <Markdown className="mt-2 text-sm text-muted-foreground" content="Courses in your plan" />
-            </div>
-            <div className="border border-border bg-card p-6">
+            </FadeItem>
+            <FadeItem className="border border-border bg-card p-6">
               <h2 className="font-mono text-xs uppercase tracking-[0.1em] text-muted-foreground mb-2">Credits Remaining</h2>
               <p className="text-4xl font-extrabold tracking-[-0.04em] text-accent">{creditsRemaining}</p>
               <Markdown className="mt-2 text-sm text-muted-foreground" content="To reach 120 credits" />
-            </div>
-            <div className="border border-border bg-card p-6">
+            </FadeItem>
+            <FadeItem className="border border-border bg-card p-6">
               <h2 className="font-mono text-xs uppercase tracking-[0.1em] text-muted-foreground mb-2">GPA Goal</h2>
               <p className="text-4xl font-extrabold tracking-[-0.04em] text-accent">{gpaGoal.toFixed(1)}</p>
               <Markdown className="mt-2 text-sm text-muted-foreground" content="Target GPA" />
-            </div>
-            <div className="border border-border bg-card p-6">
+            </FadeItem>
+            <FadeItem className="border border-border bg-card p-6">
               <h2 className="font-mono text-xs uppercase tracking-[0.1em] text-muted-foreground mb-2">Semesters Left</h2>
               <p className="text-4xl font-extrabold tracking-[-0.04em] text-accent">{yearsRemaining * 2}</p>
               <Markdown className="mt-2 text-sm text-muted-foreground" content={`${yearsRemaining} year${yearsRemaining !== 1 ? 's' : ''}`} />
-            </div>
-          </div>
+            </FadeItem>
+          </StaggerGroup>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 motion-stagger">
-            <div className="border border-border bg-card p-6">
+          <StaggerGroup className="grid grid-cols-1 md:grid-cols-2 gap-6" amount={0.1}>
+            <FadeItem className="border border-border bg-card p-6">
               <h2 className="mb-6 text-3xl font-bold tracking-[-0.04em] text-foreground">Quick Actions</h2>
               <div className="space-y-4">
                 <Link
@@ -106,9 +107,9 @@ export default function Dashboard() {
                   </div>
                 </Link>
               </div>
-            </div>
+            </FadeItem>
 
-            <div className="border border-border bg-card p-6">
+            <FadeItem className="border border-border bg-card p-6">
               <h2 className="mb-6 text-3xl font-bold tracking-[-0.04em] text-foreground">Progress Overview</h2>
               <div className="space-y-4">
                 <div>
@@ -145,8 +146,8 @@ export default function Dashboard() {
                     </Link>
                   </div>
               </div>
-            </div>
-          </div>
+            </FadeItem>
+          </StaggerGroup>
         </div>
       </div>
     </div>

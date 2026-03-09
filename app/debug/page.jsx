@@ -8,6 +8,7 @@ import { calculateRemainingCredits } from '@/app/utils/creditCounter'
 import { supabase } from '@/app/supabase'
 import { ButtonLink, Button } from '@/app/components/ui/Button'
 import { Input } from '@/app/components/ui/Input'
+import { FadeIn, StaggerGroup, FadeItem } from '@/app/components/motion/MotionPrimitives'
 
 function StatusPill({ ok, label }) {
   return (
@@ -102,14 +103,14 @@ export default function DebugPage() {
       <div className="flex">
         <Sidebar />
         <main className="flex-1 space-y-8 p-8 md:p-12">
-          <section className="border border-border bg-card p-6 motion-fade-up">
+          <FadeIn className="border border-border bg-card p-6" amount={0.08}>
             <h1 className="text-5xl font-bold tracking-[-0.05em] text-foreground">Debug Playground</h1>
             <p className="mt-3 text-sm uppercase tracking-[0.1em] text-muted-foreground">
               Test major UI states with a local mock test user. This page does not write to Supabase.
             </p>
-          </section>
+          </FadeIn>
 
-          <section className="border border-border bg-card p-6 motion-fade-up motion-delay-1">
+          <FadeIn className="border border-border bg-card p-6" delay={0.08} amount={0.08}>
             <h2 className="mb-6 text-3xl font-bold tracking-[-0.04em] text-foreground">Test User Controls</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <label className="block">
@@ -171,9 +172,9 @@ export default function DebugPage() {
                 />
               </label>
             </div>
-          </section>
+          </FadeIn>
 
-          <section className="border border-border bg-card p-6 motion-fade-up motion-delay-2">
+          <FadeIn className="border border-border bg-card p-6" delay={0.12} amount={0.08}>
             <h2 className="mb-6 text-3xl font-bold tracking-[-0.04em] text-foreground">Dashboard Component Preview</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
               <div className="border border-border bg-background p-4">
@@ -220,21 +221,21 @@ export default function DebugPage() {
                 </div>
               </div>
             </div>
-          </section>
+          </FadeIn>
 
-          <section className="border border-border bg-card p-6 motion-fade-up motion-delay-3">
+          <FadeIn className="border border-border bg-card p-6" delay={0.16} amount={0.08}>
             <h2 className="mb-4 text-3xl font-bold tracking-[-0.04em] text-foreground">Route Test Links</h2>
-            <div className="flex flex-wrap gap-3">
-              <ButtonLink href="/dashboard" variant="primary">Dashboard</ButtonLink>
-              <ButtonLink href="/planner" variant="outline">Planner</ButtonLink>
-              <ButtonLink href="/easyA" variant="outline">Easy A</ButtonLink>
-              <ButtonLink href="/professors" variant="outline">Professors</ButtonLink>
-              <ButtonLink href="/settings" variant="outline">Settings</ButtonLink>
-              <ButtonLink href="/onboarding" variant="outline">Onboarding</ButtonLink>
-            </div>
-          </section>
+            <StaggerGroup className="flex flex-wrap gap-3" amount={0.08}>
+              <FadeItem><ButtonLink href="/dashboard" variant="primary">Dashboard</ButtonLink></FadeItem>
+              <FadeItem><ButtonLink href="/planner" variant="outline">Planner</ButtonLink></FadeItem>
+              <FadeItem><ButtonLink href="/easyA" variant="outline">Easy A</ButtonLink></FadeItem>
+              <FadeItem><ButtonLink href="/professors" variant="outline">Professors</ButtonLink></FadeItem>
+              <FadeItem><ButtonLink href="/settings" variant="outline">Settings</ButtonLink></FadeItem>
+              <FadeItem><ButtonLink href="/onboarding" variant="outline">Onboarding</ButtonLink></FadeItem>
+            </StaggerGroup>
+          </FadeIn>
 
-          <section className="border border-border bg-card p-6 motion-fade-up motion-delay-4">
+          <FadeIn className="border border-border bg-card p-6" delay={0.2} amount={0.08}>
             <h2 className="mb-4 text-3xl font-bold tracking-[-0.04em] text-foreground">Supabase Connection Check</h2>
             <div className="flex flex-wrap items-center gap-3 mb-4">
               <StatusPill
@@ -286,7 +287,7 @@ export default function DebugPage() {
                 </ul>
               </div>
             )}
-          </section>
+          </FadeIn>
         </main>
       </div>
     </div>

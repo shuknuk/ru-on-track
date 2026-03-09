@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { StaggerGroup, FadeItem } from '@/app/components/motion/MotionPrimitives'
 
 export default function Sidebar() {
   const menuItems = [
@@ -13,9 +14,9 @@ export default function Sidebar() {
   return (
     <aside className="w-72 border-r border-border bg-background p-6">
       <h2 className="font-mono text-xs font-semibold tracking-[0.2em] text-muted-foreground mb-8">NAVIGATION</h2>
-      <ul className="space-y-2">
+      <StaggerGroup className="space-y-2" amount={0.05}>
         {menuItems.map((item) => (
-          <li key={item.path}>
+          <FadeItem key={item.path}>
             <Link
               href={item.path}
               className="group block border border-transparent px-4 py-3 text-sm uppercase tracking-[0.08em] text-muted-foreground transition-all duration-150 hover:border-border hover:text-foreground"
@@ -24,9 +25,9 @@ export default function Sidebar() {
                 {item.label}
               </span>
             </Link>
-          </li>
+          </FadeItem>
         ))}
-      </ul>
+      </StaggerGroup>
     </aside>
   )
 }

@@ -8,6 +8,7 @@ import { useAuth } from '@/app/AuthProvider'
 import majorsData from '@/app/data/rutgers-majors.json'
 import { Button } from '@/app/components/ui/Button'
 import { Input } from '@/app/components/ui/Input'
+import { FadeIn, StaggerGroup, FadeItem } from '@/app/components/motion/MotionPrimitives'
 
 export default function Onboarding() {
   const router = useRouter()
@@ -306,7 +307,7 @@ export default function Onboarding() {
   return (
     <div className="min-h-screen bg-background text-foreground flex items-center justify-center p-4">
       <Toaster position="top-center" />
-      <div className="w-full max-w-2xl border border-border bg-card p-8">
+      <FadeIn className="w-full max-w-2xl border border-border bg-card p-8" amount={0.2}>
         <h1 className="mb-2 text-center font-sans text-5xl font-bold tracking-[-0.05em] text-foreground">
           Complete Your Profile
         </h1>
@@ -315,16 +316,16 @@ export default function Onboarding() {
         </p>
 
         <div className="mb-8">
-          <div className="flex justify-between mb-2">
+          <StaggerGroup className="mb-2 flex justify-between" amount={0.01}>
             {steps.map(step => (
-              <div key={step.number} className="text-center">
+              <FadeItem key={step.number} className="text-center">
                 <div className={`mx-auto mb-2 flex h-8 w-8 items-center justify-center border ${currentStep >= step.number ? 'border-accent text-accent' : 'border-border text-muted-foreground'}`}>
                   {step.number}
                 </div>
                 <span className="text-xs uppercase tracking-[0.08em] text-muted-foreground">{step.title}</span>
-              </div>
+              </FadeItem>
             ))}
-          </div>
+          </StaggerGroup>
           <div className="h-2 bg-muted">
             <div
               className="h-full bg-accent transition-all duration-300"
@@ -336,7 +337,7 @@ export default function Onboarding() {
         {currentStep === 1 && renderStep1()}
         {currentStep === 2 && renderStep2()}
         {currentStep === 3 && renderStep3()}
-      </div>
+      </FadeIn>
     </div>
   )
 }

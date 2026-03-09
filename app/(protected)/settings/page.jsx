@@ -7,6 +7,7 @@ import { useAuth } from '@/app/AuthProvider'
 import Markdown from '@/app/components/common/Markdown'
 import { supabase } from '@/app/supabase'
 import { Button } from '@/app/components/ui/Button'
+import { FadeIn } from '@/app/components/motion/MotionPrimitives'
 
 export default function Settings() {
   const router = useRouter()
@@ -40,8 +41,10 @@ export default function Settings() {
       <div className="flex">
         <Sidebar />
         <div className="flex-1 p-8 md:p-12">
-          <h1 className="mb-8 font-sans text-5xl font-bold tracking-[-0.05em] text-foreground">Settings</h1>
-          <div className="max-w-3xl border border-border bg-card p-8">
+          <FadeIn>
+            <h1 className="mb-8 font-sans text-5xl font-bold tracking-[-0.05em] text-foreground">Settings</h1>
+          </FadeIn>
+          <FadeIn className="max-w-3xl border border-border bg-card p-8" delay={0.08}>
             <div className="mb-8 border-b border-border pb-8">
               <h2 className="mb-4 font-mono text-xs uppercase tracking-[0.2em] text-muted-foreground">Account</h2>
               <Markdown className="text-foreground" content={`Email: ${profile?.email || 'Not available'}`} />
@@ -65,7 +68,7 @@ export default function Settings() {
                 Sign Out
               </Button>
             </div>
-          </div>
+          </FadeIn>
         </div>
       </div>
     </div>
