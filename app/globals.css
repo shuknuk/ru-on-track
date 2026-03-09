@@ -1,3 +1,37 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.markdown-body p {
+  margin: 0;
+}
+
+.markdown-body p + p {
+  margin-top: 0.5rem;
+}
+
+.markdown-body strong {
+  font-weight: 700;
+}
+
+.markdown-body em {
+  font-style: italic;
+}
+
+.markdown-body code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: 0.9em;
+  background: rgba(17, 24, 39, 0.06);
+  padding: 0.1rem 0.3rem;
+  border-radius: 0.25rem;
+}
+
+.markdown-body ul,
+.markdown-body ol {
+  margin: 0.25rem 0 0 1rem;
+}
+
+.markdown-body a {
+  color: #cc0033;
+  text-decoration: underline;
+}

@@ -5,6 +5,7 @@ import { useAuth } from '@/app/AuthProvider'
 import Navbar from '@/app/components/layout/Navbar'
 import Sidebar from '@/app/components/layout/Sidebar'
 import { calculateRemainingCredits } from '@/app/utils/creditCounter'
+import Markdown from '@/app/components/common/Markdown'
 
 export default function Dashboard() {
   const { profile } = useAuth()
@@ -25,33 +26,36 @@ export default function Dashboard() {
             <h1 className="text-3xl font-bold text-scarlet mb-2">
               Welcome back{profile?.email ? `, ${profile.email.split('@')[0]}` : ''}!
             </h1>
-            <p className="text-gray-600">
-              {profile?.major_primary && `Major: ${profile.major_primary}`}
-              {profile?.major_secondary && ` & ${profile.major_secondary}`}
-              {profile?.grad_year && ` • Graduating ${profile.grad_year}`}
-            </p>
+            <Markdown
+              className="text-gray-600"
+              content={[
+                profile?.major_primary ? `Major: **${profile.major_primary}**` : '',
+                profile?.major_secondary ? `& **${profile.major_secondary}**` : '',
+                profile?.grad_year ? `• Graduating **${profile.grad_year}**` : '',
+              ].filter(Boolean).join(' ')}
+            />
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             <div className="bg-white rounded-lg shadow p-6">
               <h2 className="text-xl font-bold mb-2">Credits Planned</h2>
               <p className="text-3xl font-bold text-scarlet">{totalCreditsPlanned}</p>
-              <p className="text-sm text-gray-500 mt-2">Courses in your plan</p>
+              <Markdown className="text-sm text-gray-500 mt-2" content="Courses in your plan" />
             </div>
             <div className="bg-white rounded-lg shadow p-6">
               <h2 className="text-xl font-bold mb-2">Credits Remaining</h2>
               <p className="text-3xl font-bold text-scarlet">{creditsRemaining}</p>
-              <p className="text-sm text-gray-500 mt-2">To reach 120 credits</p>
+              <Markdown className="text-sm text-gray-500 mt-2" content="To reach 120 credits" />
             </div>
             <div className="bg-white rounded-lg shadow p-6">
               <h2 className="text-xl font-bold mb-2">GPA Goal</h2>
               <p className="text-3xl font-bold text-scarlet">{gpaGoal.toFixed(1)}</p>
-              <p className="text-sm text-gray-500 mt-2">Target GPA</p>
+              <Markdown className="text-sm text-gray-500 mt-2" content="Target GPA" />
             </div>
             <div className="bg-white rounded-lg shadow p-6">
               <h2 className="text-xl font-bold mb-2">Semesters Left</h2>
               <p className="text-3xl font-bold text-scarlet">{yearsRemaining * 2}</p>
-              <p className="text-sm text-gray-500 mt-2">{yearsRemaining} year{yearsRemaining !== 1 ? 's' : ''}</p>
+              <Markdown className="text-sm text-gray-500 mt-2" content={`${yearsRemaining} year${yearsRemaining !== 1 ? 's' : ''}`} />
             </div>
           </div>
 
@@ -69,7 +73,7 @@ export default function Dashboard() {
                     </div>
                     <div>
                       <h3 className="font-bold">4-Year Planner</h3>
-                      <p className="text-sm text-gray-600">Drag and drop courses</p>
+                      <Markdown className="text-sm text-gray-600" content="Drag and drop courses" />
                     </div>
                   </div>
                 </Link>
@@ -83,7 +87,7 @@ export default function Dashboard() {
                     </div>
                     <div>
                       <h3 className="font-bold">Easy A Finder</h3>
-                      <p className="text-sm text-gray-600">GPA-boosting courses</p>
+                      <Markdown className="text-sm text-gray-600" content="GPA-boosting courses" />
                     </div>
                   </div>
                 </Link>
@@ -97,7 +101,7 @@ export default function Dashboard() {
                     </div>
                     <div>
                       <h3 className="font-bold">Professor Ratings</h3>
-                      <p className="text-sm text-gray-600">RateMyProfessors links</p>
+                      <Markdown className="text-sm text-gray-600" content="RateMyProfessors links" />
                     </div>
                   </div>
                 </Link>
@@ -132,9 +136,7 @@ export default function Dashboard() {
                   </div>
                 </div>
                 <div className="pt-4 border-t">
-                    <p className="text-sm text-gray-600">
-                      <span className="font-semibold">Next Step:</span> Add courses to your 4-year plan to track your progress.
-                    </p>
+                    <Markdown className="text-sm text-gray-600" content="**Next Step:** Add courses to your 4-year plan to track your progress." />
                     <Link
                       href="/planner"
                       className="inline-block mt-3 bg-scarlet text-white px-4 py-2 rounded-lg font-semibold hover:bg-red-700 transition"

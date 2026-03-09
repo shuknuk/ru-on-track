@@ -16,11 +16,13 @@ export default function Onboarding() {
   const [formData, setFormData] = useState({
     major_primary: '',
     major_secondary: '',
-    credits_completed: 0,
+    credits_completed: '',
     years_to_complete: 4,
     gpa_goal: 3.5,
     max_credits_per_semester: 15,
   })
+
+  const completedCredits = formData.credits_completed === '' ? 0 : Number(formData.credits_completed)
 
   const calculateGradYear = () => {
     const currentYear = new Date().getFullYear()
@@ -37,6 +39,22 @@ export default function Onboarding() {
     }))
   }
 
+  const handleCreditsChange = (e) => {
+    const digitsOnly = e.target.value.replace(/\D/g, '')
+
+    if (digitsOnly === '') {
+      setFormData(prev => ({ ...prev, credits_completed: '' }))
+      return
+    }
+
+    const normalized = digitsOnly.replace(/^0+(?=\d)/, '')
+    const numericValue = Number(normalized)
+
+    if (numericValue < 0 || numericValue > 21) return
+
+    setFormData(prev => ({ ...prev, credits_completed: normalized }))
+  }
+
   const handleStep1Submit = () => {
     if (!formData.major_primary) {
       toast.error('Please select a primary major')
@@ -47,8 +65,8 @@ export default function Onboarding() {
   }
 
   const handleStep2Submit = () => {
-    if (formData.credits_completed < 0 || formData.credits_completed > 200) {
-      toast.error('Please enter a valid number of completed credits (0-200)')
+    if (formData.credits_completed === '' || completedCredits < 0 || completedCredits > 21) {
+      toast.error('Please enter a valid number of completed credits (0-21)')
       return false
     }
     setCurrentStep(3)
@@ -63,7 +81,7 @@ export default function Onboarding() {
         .update({
           major_primary: formData.major_primary,
           major_secondary: formData.major_secondary || null,
-          credits_completed: formData.credits_completed,
+          credits_completed: completedCredits,
           years_to_complete: formData.years_to_complete,
           grad_year: calculateGradYear(),
           gpa_goal: formData.gpa_goal,
@@ -149,16 +167,27 @@ export default function Onboarding() {
             Credits Already Completed
           </label>
           <input
-            type="number"
+            type="text"
             name="credits_completed"
             value={formData.credits_completed}
-            onChange={handleInputChange}
-            min="0"
-            max="200"
+            onChange={handleCreditsChange}
+            inputMode="numeric"
+            pattern="[0-9]*"
+            placeholder="0"
             className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-scarlet focus:border-transparent transition"
           />
           <p className="mt-2 text-sm text-gray-500">
-            Including transfer credits and AP credits
+            Enter a whole number from 0 to 21 (including transfer and AP credits)
+          </p>
+          <p className="mt-1 text-sm">
+            <a
+              href="https://sasundergrad.rutgers.edu/degree-requirements/policies/credits-and-residency"
+              target="_blank"
+              rel="noreferrer"
+              className="text-scarlet hover:underline"
+            >
+              Rutgers SAS credits and residency policy
+            </a>
           </p>
         </div>
 
@@ -184,7 +213,7 @@ export default function Onboarding() {
           <p className="text-sm text-blue-800">
             <span className="font-semibold">Suggested graduation year:</span> {gradYear}
             <br />
-            <span className="font-semibold">Credits remaining:</span> {Math.max(0, 120 - formData.credits_completed)}
+            <span className="font-semibold">Credits remaining:</span> {Math.max(0, 120 - completedCredits)}
           </p>
         </div>
 

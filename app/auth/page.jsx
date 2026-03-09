@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import toast, { Toaster } from 'react-hot-toast'
 import { useAuth } from '@/app/AuthProvider'
+import Markdown from '@/app/components/common/Markdown'
 
 export default function Auth() {
   const router = useRouter()
@@ -87,12 +88,16 @@ export default function Auth() {
           router.push('/dashboard')
         }
       } else {
-        const { error } = await signUp(formData.email, formData.password)
+        const { data, error } = await signUp(formData.email, formData.password)
         if (error) {
           toast.error(error.message || 'Failed to sign up')
         } else {
-          toast.success('Account created! Check your email to confirm your account.')
-          router.push('/onboarding')
+          if (data?.session) {
+            toast.success('Account created!')
+            router.push('/onboarding')
+          } else {
+            toast.success('Account created! Check your email to confirm your account.')
+          }
         }
       }
     } catch (error) {
@@ -144,9 +149,7 @@ export default function Auth() {
               {errors.email && (
                 <p className="mt-2 text-sm text-red-600">{errors.email}</p>
               )}
-              <p className="mt-2 text-sm text-gray-500">
-                Enter any valid email address
-              </p>
+              <Markdown className="mt-2 text-sm text-gray-500" content="Enter any valid email address" />
             </div>
 
             <div className="mb-6">
@@ -166,9 +169,7 @@ export default function Auth() {
               {errors.password && (
                 <p className="mt-2 text-sm text-red-600">{errors.password}</p>
               )}
-              <p className="mt-2 text-sm text-gray-500">
-                Must be at least 6 characters
-              </p>
+              <Markdown className="mt-2 text-sm text-gray-500" content="Must be at least 6 characters" />
             </div>
 
             {activeTab === 'signup' && (

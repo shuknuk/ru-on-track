@@ -6,6 +6,7 @@ export default function Sidebar() {
     { label: '4-Year Planner', path: '/planner' },
     { label: 'Easy A Finder', path: '/easyA' },
     { label: 'Professor Ratings', path: '/professors' },
+    { label: 'Debug Playground', path: '/debug' },
     { label: 'Settings', path: '/settings' },
   ]
 

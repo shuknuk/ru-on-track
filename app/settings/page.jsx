@@ -3,6 +3,7 @@
 import Navbar from '@/app/components/layout/Navbar'
 import Sidebar from '@/app/components/layout/Sidebar'
 import { useAuth } from '@/app/AuthProvider'
+import Markdown from '@/app/components/common/Markdown'
 
 export default function Settings() {
   const { profile, signOut } = useAuth()
@@ -17,12 +18,12 @@ export default function Settings() {
           <div className="bg-white rounded-lg shadow p-6 max-w-2xl">
             <div className="mb-6">
               <h2 className="text-xl font-bold mb-4">Account</h2>
-              <p className="text-gray-600">Email: {profile?.email || 'Not available'}</p>
-              <p className="text-gray-600">Major: {profile?.major_primary || 'Not set'}</p>
+              <Markdown className="text-gray-600" content={`Email: ${profile?.email || 'Not available'}`} />
+              <Markdown className="text-gray-600" content={`Major: ${profile?.major_primary || 'Not set'}`} />
             </div>
             <div className="mb-6">
               <h2 className="text-xl font-bold mb-4">Subscription</h2>
-              <p className="text-gray-600">Current plan: {profile?.is_premium ? 'Premium' : 'Free Tier'}</p>
+              <Markdown className="text-gray-600" content={`Current plan: ${profile?.is_premium ? 'Premium' : 'Free Tier'}`} />
               {!profile?.is_premium && (
                 <button className="mt-4 bg-scarlet text-white px-4 py-2 rounded-lg font-semibold hover:bg-red-700 transition">
                   Upgrade to Premium

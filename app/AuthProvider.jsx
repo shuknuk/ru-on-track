@@ -15,8 +15,8 @@ export function AuthProvider({ children }) {
     if (initialized.current || !supabase) return
     initialized.current = true
 
-    const fetchProfile = async (userId) => {
-      if (!userId) {
+    const fetchProfile = async (currentUser) => {
+      if (!currentUser?.id) {
         setProfile(null)
         return
       }
@@ -24,13 +24,22 @@ export function AuthProvider({ children }) {
       const { data, error } = await supabase
         .from('profiles')
         .select('*')
-        .eq('id', userId)
-        .single()
+        .eq('id', currentUser.id)
+        .maybeSingle()
 
       if (error) {
         console.error('Error fetching profile:', error)
+        setProfile(null)
       } else if (data) {
         setProfile(data)
+      } else {
+        const { data: createdProfile, error: createError } = await createProfile(currentUser.id, currentUser.email)
+        if (createError) {
+          console.error('Error creating profile:', createError)
+          setProfile(null)
+        } else {
+          setProfile(createdProfile || null)
+        }
       }
     }
 
@@ -40,7 +49,7 @@ export function AuthProvider({ children }) {
 
         if (session?.user) {
           setUser(session.user)
-          await fetchProfile(session.user.id)
+          await fetchProfile(session.user)
         } else {
           setUser(null)
           setProfile(null)
@@ -57,7 +66,7 @@ export function AuthProvider({ children }) {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
       if (session?.user) {
         setUser(session.user)
-        await fetchProfile(session.user.id)
+        await fetchProfile(session.user)
       } else {
         setUser(null)
         setProfile(null)
@@ -93,10 +102,12 @@ export function AuthProvider({ children }) {
       .from('profiles')
       .select('*')
       .eq('id', user.id)
-      .single()
+      .maybeSingle()
 
     if (!error && data) {
       setProfile(data)
+    } else if (!error) {
+      setProfile(null)
     }
   }
 

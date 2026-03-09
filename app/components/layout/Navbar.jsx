@@ -11,6 +11,9 @@ export default function Navbar() {
           <Link href="/dashboard" className="text-gray-700 hover:text-scarlet">
             Dashboard
           </Link>
+          <Link href="/debug" className="text-gray-700 hover:text-scarlet">
+            Debug
+          </Link>
           <Link href="/settings" className="text-gray-700 hover:text-scarlet">
             Settings
           </Link>

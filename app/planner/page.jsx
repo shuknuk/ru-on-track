@@ -2,6 +2,7 @@
 
 import Navbar from '@/app/components/layout/Navbar'
 import Sidebar from '@/app/components/layout/Sidebar'
+import Markdown from '@/app/components/common/Markdown'
 
 export default function Planner() {
   return (
@@ -12,10 +13,11 @@ export default function Planner() {
         <div className="flex-1 p-8">
           <h1 className="text-3xl font-bold text-scarlet mb-8">4-Year Planner</h1>
           <div className="bg-white rounded-lg shadow p-6">
-            <p className="mb-4">Planner under construction</p>
-            <p className="text-sm text-gray-600">
-              This will be a drag-and-drop semester view with course cards.
-            </p>
+            <Markdown className="mb-4" content="Planner under construction" />
+            <Markdown
+              className="text-sm text-gray-600"
+              content="This will be a drag-and-drop semester view with course cards."
+            />
           </div>
         </div>
       </div>
