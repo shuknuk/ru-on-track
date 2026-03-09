@@ -9,10 +9,24 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null)
   const [profile, setProfile] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [authInitWarning, setAuthInitWarning] = useState('')
   const initialized = useRef(false)
 
+  const withTimeout = async (promise, timeoutMs = 10000) => {
+    const timeoutPromise = new Promise((_, reject) => {
+      setTimeout(() => reject(new Error('Connection timed out. Please check your internet and try again.')), timeoutMs)
+    })
+    return Promise.race([promise, timeoutPromise])
+  }
+
   useEffect(() => {
-    if (initialized.current || !supabase) return
+    if (initialized.current) return
+
+    if (!supabase) {
+      setLoading(false)
+      return
+    }
+
     initialized.current = true
 
     const fetchProfile = async (currentUser) => {
@@ -45,17 +59,22 @@ export function AuthProvider({ children }) {
 
     const initAuth = async () => {
       try {
-        const { data: { session } } = await supabase.auth.getSession()
+        const { data: { session } } = await withTimeout(supabase.auth.getSession())
 
         if (session?.user) {
           setUser(session.user)
           await fetchProfile(session.user)
+          setAuthInitWarning('')
         } else {
           setUser(null)
           setProfile(null)
+          setAuthInitWarning('')
         }
       } catch (error) {
         console.error('Get session error:', error)
+        setUser(null)
+        setProfile(null)
+        setAuthInitWarning('Authentication check took too long. You can still sign in, but please verify your connection if this keeps happening.')
       } finally {
         setLoading(false)
       }
@@ -63,15 +82,25 @@ export function AuthProvider({ children }) {
 
     initAuth()
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (event === 'SIGNED_OUT' || event === 'USER_DELETED') {
+        setUser(null)
+        setProfile(null)
+        setAuthInitWarning('')
+        setLoading(false)
+        return
+      }
+
       if (session?.user) {
         setUser(session.user)
         await fetchProfile(session.user)
+        setAuthInitWarning('')
       } else {
         setUser(null)
         setProfile(null)
-        setLoading(false)
       }
+
+      setLoading(false)
     })
 
     return () => subscription.unsubscribe()
@@ -112,48 +141,101 @@ export function AuthProvider({ children }) {
   }
 
   const signIn = async (email, password) => {
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    })
-    return { data, error }
+    if (!supabase) {
+      return { data: null, error: new Error('Supabase client is not configured.') }
+    }
+
+    try {
+      const result = await withTimeout(
+        supabase.auth.signInWithPassword({
+          email,
+          password,
+        })
+      )
+
+      if (result?.data?.user) {
+        const signedInUser = result.data.user
+        setUser(signedInUser)
+        setAuthInitWarning('')
+
+        const { data: existingProfile, error: profileError } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', signedInUser.id)
+          .maybeSingle()
+
+        if (profileError) {
+          console.error('Error fetching profile after sign in:', profileError)
+          setProfile(null)
+        } else if (existingProfile) {
+          setProfile(existingProfile)
+        } else {
+          const { data: createdProfile, error: createError } = await createProfile(signedInUser.id, signedInUser.email)
+          if (createError) {
+            console.error('Error creating profile after sign in:', createError)
+            setProfile(null)
+          } else {
+            setProfile(createdProfile || null)
+          }
+        }
+      }
+
+      return result
+    } catch (error) {
+      return { data: null, error }
+    }
   }
 
   const signUp = async (email, password) => {
-    const signupPromise = supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        emailRedirectTo: `${window.location.origin}/dashboard`,
-      },
-    })
-
-    const timeoutPromise = new Promise((resolve) =>
-      setTimeout(() => resolve({ timedOut: true }), 15000)
-    )
-
-    const result = await Promise.race([signupPromise, timeoutPromise])
-
-    if (result.timedOut) {
-      return { data: null, error: new Error('Signup request timed out. Please try again.') }
+    if (!supabase) {
+      return { data: null, error: new Error('Supabase client is not configured.') }
     }
 
-    const { data, error } = result
+    try {
+      const { data, error } = await withTimeout(
+        supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            emailRedirectTo: `${window.location.origin}/dashboard`,
+          },
+        })
+      )
 
-    if (data?.user && !error) {
-      try {
-        await createProfile(data.user.id, email)
-      } catch (profileError) {
-        console.error('Profile creation failed:', profileError)
+      if (data?.user && !error) {
+        if (data.session?.user) {
+          setUser(data.session.user)
+          setAuthInitWarning('')
+        }
+
+        try {
+          await createProfile(data.user.id, email)
+        } catch (profileError) {
+          console.error('Profile creation failed:', profileError)
+        }
       }
+
+      return { data, error }
+    } catch (error) {
+      return { data: null, error }
     }
-    return { data, error }
   }
 
   const signOut = async () => {
-    const { error } = await supabase.auth.signOut()
-    setProfile(null)
-    return { error }
+    if (!supabase) {
+      setUser(null)
+      setProfile(null)
+      return { error: null }
+    }
+
+    try {
+      const { error } = await withTimeout(supabase.auth.signOut())
+      setUser(null)
+      setProfile(null)
+      return { error }
+    } catch (error) {
+      return { error }
+    }
   }
 
   return (
@@ -161,6 +243,7 @@ export function AuthProvider({ children }) {
       user,
       profile,
       loading,
+      authInitWarning,
       refreshProfile,
       signIn,
       signUp,

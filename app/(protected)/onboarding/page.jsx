@@ -6,6 +6,8 @@ import toast, { Toaster } from 'react-hot-toast'
 import { supabase } from '@/app/supabase'
 import { useAuth } from '@/app/AuthProvider'
 import majorsData from '@/app/data/rutgers-majors.json'
+import { Button } from '@/app/components/ui/Button'
+import { Input } from '@/app/components/ui/Input'
 
 export default function Onboarding() {
   const router = useRouter()
@@ -115,14 +117,14 @@ export default function Onboarding() {
   const renderStep1 = () => (
     <div className="space-y-6">
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
+        <label className="mb-2 block font-mono text-xs uppercase tracking-[0.1em] text-muted-foreground">
           Primary Major *
         </label>
         <select
           name="major_primary"
           value={formData.major_primary}
           onChange={handleInputChange}
-          className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-scarlet focus:border-transparent transition"
+          className="h-12 w-full border border-border bg-input px-4 text-base text-foreground outline-none transition-colors focus:border-accent"
           required
         >
           <option value="">Select a major</option>
@@ -133,14 +135,14 @@ export default function Onboarding() {
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
+        <label className="mb-2 block font-mono text-xs uppercase tracking-[0.1em] text-muted-foreground">
           Secondary Major (Optional)
         </label>
         <select
           name="major_secondary"
           value={formData.major_secondary}
           onChange={handleInputChange}
-          className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-scarlet focus:border-transparent transition"
+          className="h-12 w-full border border-border bg-input px-4 text-base text-foreground outline-none transition-colors focus:border-accent"
         >
           <option value="">None</option>
           {majorsData.map(major => (
@@ -149,12 +151,12 @@ export default function Onboarding() {
         </select>
       </div>
 
-      <button
+      <Button
         onClick={handleStep1Submit}
-        className="w-full bg-scarlet text-white py-3 rounded-lg font-semibold hover:bg-red-700 transition"
+        className="w-full justify-center"
       >
         Continue to Step 2
-      </button>
+      </Button>
     </div>
   )
 
@@ -163,10 +165,10 @@ export default function Onboarding() {
     return (
       <div className="space-y-6">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="mb-2 block font-mono text-xs uppercase tracking-[0.1em] text-muted-foreground">
             Credits Already Completed
           </label>
-          <input
+          <Input
             type="text"
             name="credits_completed"
             value={formData.credits_completed}
@@ -174,9 +176,8 @@ export default function Onboarding() {
             inputMode="numeric"
             pattern="[0-9]*"
             placeholder="0"
-            className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-scarlet focus:border-transparent transition"
           />
-          <p className="mt-2 text-sm text-gray-500">
+          <p className="mt-2 text-sm text-muted-foreground">
             Enter a whole number from 0 to 21 (including transfer and AP credits)
           </p>
           <p className="mt-1 text-sm">
@@ -184,7 +185,7 @@ export default function Onboarding() {
               href="https://sasundergrad.rutgers.edu/degree-requirements/policies/credits-and-residency"
               target="_blank"
               rel="noreferrer"
-              className="text-scarlet hover:underline"
+              className="text-accent hover:underline"
             >
               Rutgers SAS credits and residency policy
             </a>
@@ -192,7 +193,7 @@ export default function Onboarding() {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="mb-2 block font-mono text-xs uppercase tracking-[0.1em] text-muted-foreground">
             Years to Complete Degree
           </label>
           <div className="grid grid-cols-4 gap-2">
@@ -201,7 +202,7 @@ export default function Onboarding() {
                 key={years}
                 type="button"
                 onClick={() => setFormData(prev => ({ ...prev, years_to_complete: years }))}
-                className={`py-3 rounded-lg font-medium transition ${formData.years_to_complete === years ? 'bg-scarlet text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
+                className={`border px-2 py-3 text-sm uppercase tracking-[0.08em] transition ${formData.years_to_complete === years ? 'border-accent text-accent' : 'border-border text-muted-foreground hover:text-foreground'}`}
               >
                 {years} {years === 1 ? 'Year' : 'Years'}
               </button>
@@ -209,8 +210,8 @@ export default function Onboarding() {
           </div>
         </div>
 
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-          <p className="text-sm text-blue-800">
+        <div className="border border-border bg-muted p-4">
+          <p className="text-sm text-foreground">
             <span className="font-semibold">Suggested graduation year:</span> {gradYear}
             <br />
             <span className="font-semibold">Credits remaining:</span> {Math.max(0, 120 - completedCredits)}
@@ -218,18 +219,19 @@ export default function Onboarding() {
         </div>
 
         <div className="flex space-x-4">
-          <button
+          <Button
             onClick={() => setCurrentStep(1)}
-            className="flex-1 bg-gray-200 text-gray-700 py-3 rounded-lg font-semibold hover:bg-gray-300 transition"
+            variant="outline"
+            className="flex-1 justify-center"
           >
             Back
-          </button>
-          <button
+          </Button>
+          <Button
             onClick={handleStep2Submit}
-            className="flex-1 bg-scarlet text-white py-3 rounded-lg font-semibold hover:bg-red-700 transition"
+            className="flex-1 justify-center"
           >
             Continue to Step 3
-          </button>
+          </Button>
         </div>
       </div>
     )
@@ -238,8 +240,8 @@ export default function Onboarding() {
   const renderStep3 = () => (
     <div className="space-y-6">
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-4">
-          GPA Goal: <span className="font-bold text-scarlet">{formData.gpa_goal.toFixed(1)}</span>
+        <label className="mb-4 block font-mono text-xs uppercase tracking-[0.1em] text-muted-foreground">
+          GPA Goal: <span className="font-bold text-accent">{formData.gpa_goal.toFixed(1)}</span>
         </label>
         <input
           type="range"
@@ -249,9 +251,9 @@ export default function Onboarding() {
           step="0.1"
           value={formData.gpa_goal}
           onChange={handleInputChange}
-          className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+          className="h-2 w-full cursor-pointer appearance-none bg-muted"
         />
-        <div className="flex justify-between text-sm text-gray-500 mt-2">
+        <div className="mt-2 flex justify-between text-sm text-muted-foreground">
           <span>2.0</span>
           <span>3.0</span>
           <span>4.0</span>
@@ -259,7 +261,7 @@ export default function Onboarding() {
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-4">
+        <label className="mb-4 block font-mono text-xs uppercase tracking-[0.1em] text-muted-foreground">
           Max Credits Per Semester
         </label>
         <div className="grid grid-cols-4 gap-2">
@@ -268,7 +270,7 @@ export default function Onboarding() {
               key={credits}
               type="button"
               onClick={() => setFormData(prev => ({ ...prev, max_credits_per_semester: credits }))}
-              className={`py-3 rounded-lg font-medium transition ${formData.max_credits_per_semester === credits ? 'bg-scarlet text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
+              className={`border px-2 py-3 text-sm uppercase tracking-[0.08em] transition ${formData.max_credits_per_semester === credits ? 'border-accent text-accent' : 'border-border text-muted-foreground hover:text-foreground'}`}
             >
               {credits} credits
             </button>
@@ -277,19 +279,20 @@ export default function Onboarding() {
       </div>
 
       <div className="flex space-x-4">
-        <button
+        <Button
           onClick={() => setCurrentStep(2)}
-          className="flex-1 bg-gray-200 text-gray-700 py-3 rounded-lg font-semibold hover:bg-gray-300 transition"
+          variant="outline"
+          className="flex-1 justify-center"
         >
           Back
-        </button>
-        <button
+        </Button>
+        <Button
           onClick={handleCompleteOnboarding}
           disabled={loading}
-          className="flex-1 bg-scarlet text-white py-3 rounded-lg font-semibold hover:bg-red-700 transition disabled:opacity-50"
+          className="flex-1 justify-center"
         >
           {loading ? 'Saving...' : 'Complete Onboarding'}
-        </button>
+        </Button>
       </div>
     </div>
   )
@@ -301,13 +304,13 @@ export default function Onboarding() {
   ]
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-background text-foreground flex items-center justify-center p-4">
       <Toaster position="top-center" />
-      <div className="max-w-2xl w-full bg-white rounded-lg shadow-lg p-8">
-        <h1 className="text-3xl font-bold text-center text-scarlet mb-2">
+      <div className="w-full max-w-2xl border border-border bg-card p-8">
+        <h1 className="mb-2 text-center font-sans text-5xl font-bold tracking-[-0.05em] text-foreground">
           Complete Your Profile
         </h1>
-        <p className="text-center text-gray-600 mb-8">
+        <p className="mb-8 text-center text-sm uppercase tracking-[0.1em] text-muted-foreground">
           Step {currentStep} of 3: {steps[currentStep - 1]?.title}
         </p>
 
@@ -315,16 +318,16 @@ export default function Onboarding() {
           <div className="flex justify-between mb-2">
             {steps.map(step => (
               <div key={step.number} className="text-center">
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center mx-auto mb-2 ${currentStep >= step.number ? 'bg-scarlet text-white' : 'bg-gray-200 text-gray-500'}`}>
+                <div className={`mx-auto mb-2 flex h-8 w-8 items-center justify-center border ${currentStep >= step.number ? 'border-accent text-accent' : 'border-border text-muted-foreground'}`}>
                   {step.number}
                 </div>
-                <span className="text-sm font-medium">{step.title}</span>
+                <span className="text-xs uppercase tracking-[0.08em] text-muted-foreground">{step.title}</span>
               </div>
             ))}
           </div>
-          <div className="h-2 bg-gray-200 rounded-full">
+          <div className="h-2 bg-muted">
             <div
-              className="h-full bg-scarlet rounded-full transition-all duration-300"
+              className="h-full bg-accent transition-all duration-300"
               style={{ width: `${((currentStep - 1) / 2) * 100}%` }}
             />
           </div>

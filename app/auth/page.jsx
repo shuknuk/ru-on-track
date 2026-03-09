@@ -5,10 +5,13 @@ import { useRouter } from 'next/navigation'
 import toast, { Toaster } from 'react-hot-toast'
 import { useAuth } from '@/app/AuthProvider'
 import Markdown from '@/app/components/common/Markdown'
+import { Button } from '@/app/components/ui/Button'
+import { Input } from '@/app/components/ui/Input'
+import { ThemeToggle } from '@/app/components/theme/ThemeToggle'
 
 export default function Auth() {
   const router = useRouter()
-  const { user, profile, signIn, signUp, loading: authLoading } = useAuth()
+  const { user, signIn, signUp, loading: authLoading, authInitWarning } = useAuth()
   const [activeTab, setActiveTab] = useState('signin')
   const [loading, setLoading] = useState(false)
   const [formData, setFormData] = useState({
@@ -17,27 +20,29 @@ export default function Auth() {
     confirmPassword: '',
   })
   const [errors, setErrors] = useState({})
+  const [submitError, setSubmitError] = useState('')
+  const [submitMessage, setSubmitMessage] = useState('')
 
   useEffect(() => {
     if (!authLoading && user) {
-      if (profile?.major_primary) {
-        router.push('/dashboard')
-      } else {
-        router.push('/onboarding')
-      }
+      router.replace('/dashboard')
     }
-  }, [user, profile, authLoading, router])
+  }, [user, authLoading, router])
 
   if (authLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-scarlet"></div>
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="h-12 w-12 animate-spin border-b-2 border-t-2 border-accent"></div>
       </div>
     )
   }
 
   const validateEmail = (email) => {
-    if (!email.includes('@')) {
+    const normalized = email.trim()
+    if (!normalized) {
+      return 'Email is required'
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalized)) {
       return 'Please enter a valid email address'
     }
     return ''
@@ -49,8 +54,10 @@ export default function Auth() {
     const emailError = validateEmail(formData.email)
     if (emailError) newErrors.email = emailError
 
-    if (formData.password.length < 6) {
-      newErrors.password = 'Password must be at least 6 characters'
+    if (!formData.password) {
+      newErrors.password = 'Password is required'
+    } else if (formData.password.length < 8) {
+      newErrors.password = 'Password must be at least 8 characters'
     }
 
     if (activeTab === 'signup' && formData.password !== formData.confirmPassword) {
@@ -69,8 +76,18 @@ export default function Auth() {
     }
   }
 
+  const withTimeout = async (promise, timeoutMs = 10000) => {
+    const timeoutPromise = new Promise((_, reject) => {
+      setTimeout(() => reject(new Error('Connection timed out. Please check your internet and try again.')), timeoutMs)
+    })
+    return Promise.race([promise, timeoutPromise])
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault()
+    setSubmitError('')
+    setSubmitMessage('')
+
     if (!validateForm()) {
       toast.error('Please fix the errors before submitting')
       return
@@ -80,27 +97,36 @@ export default function Auth() {
 
     try {
       if (activeTab === 'signin') {
-        const { error } = await signIn(formData.email, formData.password)
+        const { error } = await withTimeout(signIn(formData.email.trim(), formData.password))
         if (error) {
+          setSubmitError(error.message || 'Failed to sign in')
           toast.error(error.message || 'Failed to sign in')
         } else {
           toast.success('Signed in successfully!')
-          router.push('/dashboard')
+          router.replace('/dashboard')
+          setTimeout(() => {
+            if (window.location.pathname === '/auth') {
+              window.location.href = '/dashboard'
+            }
+          }, 800)
         }
       } else {
-        const { data, error } = await signUp(formData.email, formData.password)
+        const { data, error } = await withTimeout(signUp(formData.email.trim(), formData.password))
         if (error) {
+          setSubmitError(error.message || 'Failed to sign up')
           toast.error(error.message || 'Failed to sign up')
         } else {
           if (data?.session) {
             toast.success('Account created!')
-            router.push('/onboarding')
+            router.push('/dashboard')
           } else {
-            toast.success('Account created! Check your email to confirm your account.')
+            setSubmitMessage('Check your email to confirm your account before signing in.')
+            toast.success('Check your email to confirm your account.')
           }
         }
       }
     } catch (error) {
+      setSubmitError(error.message || 'An unexpected error occurred')
       toast.error('An unexpected error occurred')
     } finally {
       setLoading(false)
@@ -108,18 +134,21 @@ export default function Auth() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
+    <div className="min-h-screen flex items-center justify-center bg-background p-4 text-foreground">
       <Toaster position="top-center" />
-      <div className="max-w-md w-full bg-white rounded-lg shadow-lg overflow-hidden">
-        <div className="flex border-b">
+      <div className="w-full max-w-md border border-border bg-card motion-fade-up">
+        <div className="flex justify-end border-b border-border px-4 py-3">
+          <ThemeToggle />
+        </div>
+        <div className="flex border-b border-border">
           <button
-            className={`flex-1 py-4 font-medium text-center ${activeTab === 'signin' ? 'text-scarlet border-b-2 border-scarlet' : 'text-gray-500'}`}
+            className={`flex-1 border-b-2 py-4 text-center text-xs font-semibold uppercase tracking-[0.1em] ${activeTab === 'signin' ? 'border-accent text-accent' : 'border-transparent text-muted-foreground'}`}
             onClick={() => setActiveTab('signin')}
           >
             Sign In
           </button>
           <button
-            className={`flex-1 py-4 font-medium text-center ${activeTab === 'signup' ? 'text-scarlet border-b-2 border-scarlet' : 'text-gray-500'}`}
+            className={`flex-1 border-b-2 py-4 text-center text-xs font-semibold uppercase tracking-[0.1em] ${activeTab === 'signup' ? 'border-accent text-accent' : 'border-transparent text-muted-foreground'}`}
             onClick={() => setActiveTab('signup')}
           >
             Sign Up
@@ -127,63 +156,80 @@ export default function Auth() {
         </div>
 
         <div className="p-8">
-          <h1 className="text-3xl font-bold text-center text-scarlet mb-8">
+          <h1 className="mb-8 text-center font-sans text-4xl font-bold tracking-[-0.04em] text-foreground">
             {activeTab === 'signin' ? 'Welcome Back' : 'Create Account'}
           </h1>
 
+          {authInitWarning && (
+            <div className="mb-6 border-l-2 border-yellow-500 bg-yellow-500/10 px-4 py-3 text-sm text-yellow-300 motion-fade-up">
+              {authInitWarning}
+            </div>
+          )}
+
+          {submitError && (
+            <div className="mb-6 border-l-2 border-red-500 bg-red-500/10 px-4 py-3 text-sm text-red-400 motion-fade-up">
+              {submitError}
+            </div>
+          )}
+          {submitMessage && (
+            <div className="mb-6 border-l-2 border-accent bg-accent/10 px-4 py-3 text-sm text-accent motion-fade-up">
+              {submitMessage}
+            </div>
+          )}
+
           <form onSubmit={handleSubmit}>
             <div className="mb-6">
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="email" className="mb-2 block font-mono text-xs uppercase tracking-[0.1em] text-muted-foreground">
                 Rutgers Email
               </label>
-              <input
+              <Input
                 type="email"
                 id="email"
                 name="email"
                 value={formData.email}
                 onChange={handleInputChange}
-                className={`w-full px-4 py-3 rounded-lg border ${errors.email ? 'border-red-500' : 'border-gray-300'} focus:ring-2 focus:ring-scarlet focus:border-transparent transition`}
+                className={errors.email ? 'border-red-500' : ''}
                 placeholder="you@example.com"
                 required
               />
               {errors.email && (
                 <p className="mt-2 text-sm text-red-600">{errors.email}</p>
               )}
-              <Markdown className="mt-2 text-sm text-gray-500" content="Enter any valid email address" />
+              <Markdown className="mt-2 text-sm text-muted-foreground" content="Enter any valid email address" />
             </div>
 
             <div className="mb-6">
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="password" className="mb-2 block font-mono text-xs uppercase tracking-[0.1em] text-muted-foreground">
                 Password
               </label>
-              <input
+              <Input
                 type="password"
                 id="password"
                 name="password"
                 value={formData.password}
                 onChange={handleInputChange}
-                className={`w-full px-4 py-3 rounded-lg border ${errors.password ? 'border-red-500' : 'border-gray-300'} focus:ring-2 focus:ring-scarlet focus:border-transparent transition`}
+                className={errors.password ? 'border-red-500' : ''}
                 placeholder="••••••••"
                 required
               />
               {errors.password && (
                 <p className="mt-2 text-sm text-red-600">{errors.password}</p>
               )}
-              <Markdown className="mt-2 text-sm text-gray-500" content="Must be at least 6 characters" />
+              <Markdown className="mt-2 text-sm text-muted-foreground" content="Must be at least 8 characters" />
             </div>
 
             {activeTab === 'signup' && (
               <div className="mb-6">
-                <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="confirmPassword" className="mb-2 block font-mono text-xs uppercase tracking-[0.1em] text-muted-foreground">
                   Confirm Password
                 </label>
-                <input
+                <Input
                   type="password"
                   id="confirmPassword"
                   name="confirmPassword"
                   value={formData.confirmPassword}
                   onChange={handleInputChange}
-                  className={`w-full px-4 py-3 rounded-lg border ${errors.confirmPassword ? 'border-red-500' : 'border-gray-300'} focus:ring-2 focus:ring-scarlet focus:border-transparent transition`}
+                  className={errors.confirmPassword ? 'border-red-500' : ''}
                   placeholder="••••••••"
                   required
                 />
@@ -193,27 +239,27 @@ export default function Auth() {
               </div>
             )}
 
-            <button
+            <Button
               type="submit"
               disabled={loading}
-              className="w-full bg-scarlet text-white py-3 rounded-lg font-semibold hover:bg-red-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full justify-center"
             >
               {loading ? (
                 <span className="flex items-center justify-center">
-                  <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <svg className="-ml-1 mr-3 h-5 w-5 animate-spin text-accent" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                   </svg>
-                  {activeTab === 'signin' ? 'Signing In...' : 'Creating Account...'}
+                  {activeTab === 'signin' ? 'Signing in...' : 'Signing up...'}
                 </span>
               ) : (
                 activeTab === 'signin' ? 'Sign In' : 'Create Account'
               )}
-            </button>
+            </Button>
           </form>
 
           <div className="mt-6 text-center">
-            <a href="/" className="text-sm text-scarlet hover:underline">
+            <a href="/" className="text-sm uppercase tracking-[0.1em] text-muted-foreground hover:text-accent">
               Back to home
             </a>
           </div>

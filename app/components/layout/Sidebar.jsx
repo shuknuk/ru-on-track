@@ -11,20 +11,22 @@ export default function Sidebar() {
   ]
 
   return (
-    <div className="w-64 bg-white shadow-lg min-h-screen p-6">
-      <h2 className="text-lg font-bold text-scarlet mb-8">Navigation</h2>
+    <aside className="w-72 border-r border-border bg-background p-6">
+      <h2 className="font-mono text-xs font-semibold tracking-[0.2em] text-muted-foreground mb-8">NAVIGATION</h2>
       <ul className="space-y-2">
         {menuItems.map((item) => (
           <li key={item.path}>
             <Link
               href={item.path}
-              className="block py-2 px-4 text-gray-700 hover:bg-scarlet/10 hover:text-scarlet rounded-lg transition"
+              className="group block border border-transparent px-4 py-3 text-sm uppercase tracking-[0.08em] text-muted-foreground transition-all duration-150 hover:border-border hover:text-foreground"
             >
-              {item.label}
+              <span className="relative inline-block after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-full after:origin-left after:scale-x-0 after:bg-accent after:transition-transform after:duration-150 group-hover:after:scale-x-100">
+                {item.label}
+              </span>
             </Link>
           </li>
         ))}
       </ul>
-    </div>
+    </aside>
   )
 }
