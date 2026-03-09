@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { ButtonLink } from '@/app/components/ui/Button'
 import { ThemeToggle } from '@/app/components/theme/ThemeToggle'
+import { BrandLogo } from '@/app/components/theme/BrandLogo'
 import { FadeIn, StaggerGroup, FadeItem } from '@/app/components/motion/MotionPrimitives'
 
 export default function Landing() {
@@ -36,8 +37,9 @@ export default function Landing() {
     <div className="min-h-screen bg-background text-foreground">
       <header className="border-b border-border bg-background">
         <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-4 py-4 sm:px-6">
-          <Link href="/" className="font-display text-2xl font-bold tracking-[-0.04em] text-foreground sm:text-3xl">
-            RutgersPlan
+          <Link href="/" className="inline-flex items-center gap-3 font-display text-2xl font-bold tracking-[-0.04em] text-foreground sm:text-3xl">
+            <BrandLogo size={32} priority />
+            <span>RutgersPlan</span>
           </Link>
           <div className="flex items-center gap-3">
             <ThemeToggle />
